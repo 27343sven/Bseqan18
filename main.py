@@ -19,7 +19,10 @@ if __name__ == '__main__':
     seq1 = "actcgattgcct"
     seq2 = "acttccgaatttggct"
 
-    align = Aligner(lac1, lac2)
+    seq3 = "ACTCGAATCCT"
+    seq4 = "GCCGAATTTTGCT"
+
+    align = Aligner(seq3, seq4)
     answer = align.smith_waterman()
     answer.show_alignment()
     answer.save_traceback("test.csv")
