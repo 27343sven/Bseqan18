@@ -19,6 +19,8 @@ if __name__ == '__main__':
     seq1 = "actcgattgcct"
     seq2 = "acttccgaatttggct"
 
-    align = Aligner(seq1, seq2)
+    align = Aligner(lac1, lac2)
     answer = align.smith_waterman()
     answer.show_alignment()
+    answer.save_traceback("test.csv")
+    answer.save_alignment("alignment.txt")

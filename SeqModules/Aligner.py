@@ -18,6 +18,8 @@ class Aligner:
         self.__fill_matrices()
         self.__calulate_scores()
         answer = self.__traceback()
+        self.seq1 = self.seq1[1:]
+        self.seq2 = self.seq2[1:]
         return answer
 
     def __calulate_scores(self):
@@ -45,7 +47,7 @@ class Aligner:
             _seq2 += "_" if new_dir == 2 else self.seq2[j]
             i = i - 0 if new_dir == 0 else i - 1
             j = j - 0 if new_dir == 2 else j - 1
-        answer = AlignementResult(self.seq1, self.seq2, _seq1, _seq2, self.scoreMatrix, self.directionMatrix)
+        answer = AlignementResult(self.seq1[1:], self.seq2[1:], _seq1, _seq2, self.scoreMatrix, self.directionMatrix)
         return answer
 
     def __fill_matrices(self):
@@ -83,15 +85,49 @@ class AlignementResult:
 
     def show_alignment(self):
         print(self.al_seq1)
+        print(self.__make_alignment_symbols())
+        print(self.al_seq2)
+
+    def save_alignment(self, filename):
+            with open(filename if filename[-4:] == ".txt" else filename + ".txt", "w") as file:
+                file.write(self.al_seq1 + "\n")
+                file.write(self.__make_alignment_symbols() + "\n")
+                file.write(self.al_seq2 + "\n")
+
+    def save_traceback(self, filename):
+        self.seq1 = "*" + self.seq1
+        with open(filename if filename[-4:] == ".csv" else filename + ".csv", "w") as file:
+            file.write(";*;{}\n".format(";".join(self.seq2)))
+            for i in range(len(self.seq1)):
+                dir = ["[{1}] {0}".format(x, self.__make_direction(self.directionmatrix[i, j])) for j, x in enumerate(list(self.scoreMatrix[i]))]
+                file.write("{};{}\n".format(self.seq1[i], ";".join(dir)))
+        self.seq1 = self.seq1[1:]
+
+    def __make_direction(self, i):
+        direction = ""
+        binary = list(bin(i)[2:].zfill(3))
+        if binary[0] == "1":
+            direction += "-"
+        if binary[1] == "1":
+            direction += "\\"
+        if binary[2] == "1":
+            direction += "|"
+        if binary == ["0", "0", "0"]:
+            direction += "*"
+        return direction
+
+    def __make_alignment_symbols(self):
+        symbols = ""
         for i in range(len(self.al_seq1)):
             if self.al_seq1[i] == self.al_seq2[i]:
-                print("|", end="")
+                symbols += "|"
             elif self.al_seq1[i] + self.al_seq2[i] in ["TC", "CT", "CG", "GC"]:
-                print("*", end="")
+                symbols += "*"
             else:
-                print(" ", end="")
-        print()
-        print(self.al_seq2)
+                symbols += " "
+        return symbols
+
+
 
 
 class SequenceException(Exception):
