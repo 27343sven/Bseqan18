@@ -145,10 +145,10 @@ class AlignementResult:
         for i in range(len(self.al_seq1)):
             if self.al_seq1[i] == self.al_seq2[i]:
                 symbols += "|"
-            elif self.al_seq1[i] + self.al_seq2[i] in ["TC", "CT", "CG", "GC"]:
-                symbols += "*"
-            else:
+            elif self.al_seq1[i] == "_" or self.al_seq2[i] == "_":
                 symbols += " "
+            else:
+                symbols += "*"
         return symbols
 
 
