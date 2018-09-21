@@ -100,6 +100,7 @@ class AlignementResult:
         self.al_seq2 = al_seq2
         self.scoreMatrix = scoreMatrix
         self.directionmatrix = directionMatrix
+        self.al_score = {'match': 5, 'mis': -4, 'gap': -10, 'ext': -1}
 
     def show_scorematrix(self):
         print(self.scoreMatrix)
@@ -111,12 +112,14 @@ class AlignementResult:
         print(self.al_seq1)
         print(self.__make_alignment_symbols())
         print(self.al_seq2)
+        print("score: {}".format(self.__calc_alignmentscore()))
 
     def save_alignment(self, filename):
             with open(filename if filename[-4:] == ".txt" else filename + ".txt", "w") as file:
                 file.write(self.al_seq1 + "\n")
                 file.write(self.__make_alignment_symbols() + "\n")
                 file.write(self.al_seq2 + "\n")
+                file.write("score: {}\n".format(self.__calc_alignmentscore()))
 
     def save_traceback(self, filename):
         self.seq1 = "*" + self.seq1
@@ -150,6 +153,26 @@ class AlignementResult:
             else:
                 symbols += "*"
         return symbols
+
+    def __calc_alignmentscore(self):
+        score, gap = 0, False
+        for i in range(len(self.al_seq1)):
+            if self.al_seq1[i] == self.al_seq2[i]:
+                score += self.al_score['match']
+                if gap:
+                    gap = False
+            elif self.al_seq1[i] == "_" or self.al_seq2 == "_":
+                if gap:
+                    score += self.al_score['ext']
+                else:
+                    gap = True
+                    score += self.al_score['gap']
+            else:
+                score += self.al_score['mis']
+                if gap:
+                    gap = False
+        return score
+
 
 
 
